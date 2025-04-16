@@ -28,19 +28,19 @@ function Slider() {
   }, [trendingMovies.length]);
 
   if (!trendingMovies || trendingMovies.length === 0) {
-    return <div className="w-full h-[500px] bg-gray-900 flex justify-center items-center text-white">Loading Slider...</div>;
+    return <div className="w-full h-[300px] md:h-[500px]  bg-gray-900 flex justify-center items-center text-white">Loading Slider...</div>;
   }
 
   const currentMovie = trendingMovies[index];
   const imageUrl = currentMovie?.backdrop_path ? image_url + currentMovie.backdrop_path : null;
 
   return (
-    <div className="w-full h-[500px] relative overflow-hidden">
+    <div className="w-full h-[300px] md:h-[400px] relative overflow-hidden">
       {imageUrl && (
         <img
           src={imageUrl}
           alt={currentMovie?.title || currentMovie?.name}
-          className="w-full h-full object-cover transition-opacity duration-500"
+          className="w-full h-full object-cover transition-opacity duration-500 hover:scale-150"
         />
       )}
       <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-white">
