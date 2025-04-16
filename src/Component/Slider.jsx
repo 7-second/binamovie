@@ -1,92 +1,54 @@
-// Slider.jsx
-import React, { useEffect, useRef, useState } from 'react';
-import GlobalApi from '../Services/GlobalApi';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-const image_url = "https://image.tmdb.org/t/p/original/";
+import React, { useState, useEffect } from 'react';
+import GlobalApi from '../Services/GlobalApi'; // Adjust path if needed
 
 function Slider() {
-  const [trendingMovies, setTrendingMovies] = useState(null);
-  const elementReference = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [index, setIndex] = useState(0);
+  const image_url = "https://image.tmdb.org/t/p/original/";
 
   useEffect(() => {
-  
-    getTrendingMoviesData();
+    const fetchTrending = async () => {
+      try {
+        const data = await GlobalApi.getTrendingMovies();
+        setTrendingMovies(data?.results || []);
+      } catch (error) {
+        console.error("Error fetching trending movies for slider:", error);
+      }
+    };
+
+    fetchTrending();
   }, []);
 
-  const getTrendingMoviesData = async () => {
-    
-    const data = await GlobalApi.getTrendingMovies();
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % trendingMovies.length);
+    }, 5000); // Change slide every 5 seconds
 
-    if (data && data.results) {
-      setTrendingMovies(data.results);
-    } else {
-      console.error("Slider: Failed to fetch trending movies or data is invalid.");
-      setTrendingMovies([]);
-    }
-    console.log("Slider: getTrendingMoviesData finished");
-  };
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, [trendingMovies.length]);
 
-  const nextSlide = () => {
-    if (elementReference.current && trendingMovies?.length > 0 && currentIndex < trendingMovies.length - 1) {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-      const nextElement = elementReference.current.children[currentIndex + 1];
-      if (nextElement) {
-        nextElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-      }
-    }
-  };
+  if (!trendingMovies || trendingMovies.length === 0) {
+    return <div className="w-full h-[500px] bg-gray-900 flex justify-center items-center text-white">Loading Slider...</div>;
+  }
 
-  const prevSlide = () => {
-    if (elementReference.current && trendingMovies?.length > 0 && currentIndex > 0) {
-      setCurrentIndex((prevIndex) => prevIndex - 1);
-      const prevElement = elementReference.current.children[currentIndex - 1];
-      if (prevElement) {
-        prevElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-      }
-    }
-  };
+  const currentMovie = trendingMovies[index];
+  const imageUrl = currentMovie?.backdrop_path ? image_url + currentMovie.backdrop_path : null;
 
   return (
-    <div className="relative w-full ">
-      <HiChevronLeft
-        onClick={prevSlide}
-        size={30}
-        className={`z-10 bg-white rounded-full opacity-40 cursor-pointer text-black absolute top-[100px] left-4 transform -translate-y-1/2 ${
-          currentIndex === 0 ? 'invisible' : ''
-        }`}
-      />
-      <div
-        ref={elementReference}
-        className="flex gap-0 w-full h-[50vh] md:h-[70vh] overflow-x-scroll scrollbar-hide scroll-smooth" // Full width, responsive height
-      >
-        {trendingMovies === null ? (
-          <div>Loading trending movies...</div>
-        ) : trendingMovies?.length > 0 ? (
-          trendingMovies.map((movie, index) => {
-            const imageUrl = image_url + movie.backdrop_path;
-            console.log("Slider: Generated Image URL:", imageUrl);
-            return (
-              <div key={index} className="w-full h-full flex-shrink-0 overflow-hidden">
-                <img
-                  src={imageUrl}
-                  alt={movie.title || movie.name}
-                  className='w-full h-[200px] mt-4 md:h-[350px] lg:h-[400px] px-2 md:px-4 object-center rounded-lg cursor-pointer transition-all duration-200 ease-in-out'
-                />
-              </div>
-            );
-          })
-        ) : (
-          <div>Failed to load trending movies.</div>
-        )}
+    <div className="w-full h-[500px] relative overflow-hidden">
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={currentMovie?.title || currentMovie?.name}
+          className="w-full h-full object-cover transition-opacity duration-500"
+        />
+      )}
+      <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-white">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">{currentMovie?.title || currentMovie?.name}</h2>
+        <p className="text-lg md:text-xl text-center w-4/5 md:w-2/3 line-clamp-2 md:line-clamp-3">{currentMovie?.overview}</p>
+        {/* You can add a "Watch Now" button here */}
       </div>
-      <HiChevronRight
-        onClick={nextSlide}
-        size={30}
-        className={`z-10 bg-white rounded-full opacity-40 cursor-pointer text-black absolute top-[100px] right-4 transform -translate-y-1/2 ${
-          trendingMovies && currentIndex === trendingMovies.length - 1 ? 'invisible' : ''
-        }`}
-      />
+      {/* Optional: Add navigation dots or arrows */}
     </div>
   );
 }
