@@ -8,7 +8,7 @@ import { FaTv } from 'react-icons/fa';
 import { RiMovie2Fill } from 'react-icons/ri';
 import GenreList from '../constant/GenreList';
 import { BsCollectionPlay } from 'react-icons/bs';
-import GlobalApi from '../services/GlobalApi'; // Import your API service
+import GlobalApi from '../Services/GlobalApi'; // Import your API service
 
 function Header() {
     const navigate = useNavigate();
