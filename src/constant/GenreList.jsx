@@ -1,7 +1,9 @@
 // src/constant/GenreList.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const GenreList = ({ onGenreClick }) => {
+    const navigate = useNavigate(); // Initialize useNavigate
     const genres = [
         { id: 28, name: 'Action' },
         { id: 12, name: 'Adventure' },
@@ -32,12 +34,17 @@ const GenreList = ({ onGenreClick }) => {
         { id: 10768, name: 'War & Politics' },
     ];
 
+    const handleGenreSelect = (genreId, genreName) => {
+        navigate(`/discover/movie?with_genres=${genreId}`); // Navigate to the desired path
+        onGenreClick(); // Close the dropdown in the Header component
+    };
+
     return (
         <>
             {genres.map(genre => (
                 <button
                     key={genre.id}
-                    onClick={() => onGenreClick(genre)}
+                    onClick={() => onGenreClick(genre)} // You are passing the entire 'genre' object
                     className="block py-0.5 px-2 hover:bg-gray-700 cursor-pointer text-white text-sm text-center"
                     style={{ minWidth: '70px' }}
                 >
