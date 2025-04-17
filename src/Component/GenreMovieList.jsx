@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import GlobalApi from '../services/GlobalApi';
+import GlobalApi from '../Services/GlobalApi';
 
 function GenreMovieList() {
     const { genreId: routeGenreId, page: routePage } = useParams();
