@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import GlobalApi from '../services/GlobalApi'; // Adjust path if needed
+ // Adjust path if needed
 
 function GenreMovieList() {
     const { genreId: routeGenreId, page: routePage } = useParams();
